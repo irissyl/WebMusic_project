@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.music.demo.dao.MusicDao">
+    <!-- 查询用户是否注册过 -->
+    <select id="Select_isRegister" resultType="com.music.demo.pojo.user.UserBaseInfo">
+        select * from user_information where uaccount = #{username} and upassword = #{password}
+    </select>
+    <!-- 根据用户id返回用户数据 -->
+    <select id="getUserIdreInfo" resultType="com.music.demo.pojo.user.UserBaseInfo">
+        select * from user_information where uid = #{id}
+    </select>
+    <!--  用户的注册  -->
+    <insert id="RegisterUser">
+        insert into user_information values(null,#{uaccount},#{upassword},#{User_name},#{User_avatarUrl},null,null,null,null,null,null,null,null)
+    </insert>
+    <!--  注册后就默认创建用户的歌单  -->
+    <insert id="InsertDefaultPlaylist">
+        insert into user_createplaylist values(null,#{Playlist_name},null,null,#{Playlist_icon},#{User_id})
+    </insert>
+    <!--  用户的登录  -->
+    <select id="Login" resultType="com.music.demo.pojo.user.UserBaseInfo">
+        select * from user_information where uaccount = #{username} and upassword = #{password}
+    </select>
+    <!--  用户的信息修改  -->
+    <update id="UpdateInfo">
+        update user_information
+        <trim prefix="set" suffixOverrides=",">
+            <if test="User_name != null">User_name=#{User_name},</if>
+            <if test="User_avatarUrl!=null">User_avatarUrl=#{User_avatarUrl},</if>
+            <if test="User_introduction!=null">User_introduction=#{User_introduction},</if>
+            <if test="User_gender!=null">User_gender=#{User_gender},</if>
+            <if test="User_birthday!=null">User_birthday=#{User_birthday},</if>
+            <if test="User_address!=null">User_address=#{User_address},</if>
+        </trim>
+        WHERE uid=#{uid}
+    </update>
+    <!--  查询用户的所有歌单  -->
+    <select id="SelectUserCplaylist" resultType="com.music.demo.pojo.user.CreatePlaylist">
+        select * from user_createplaylist where User_id = #{id}
+    </select>
+    <!--  添加喜欢的歌曲到自己的歌单  -->
+    <insert id="AddMyLikeSong">
+        insert into music values(null,#{Music_id},#{Music_name},#{Music_album_name},#{Music_album_id},#{Music_singer_name},#{Music_singer_id},#{playlist_id})
+    </insert>
+    <!--  查询歌单中是否已经添加过这个歌曲  -->
+    <select id="PlaylistHasThisSong" resultType="com.music.demo.pojo.user.AddSongBean">
+        select * from music where Music_id = #{SongId} and playlist_id = #{PlaylistId}
+    </select>
+    <!--  根据id查询用户的歌单信息  -->
+    <select id="getIdSelectUserPlaylist" resultType="com.music.demo.pojo.user.CreatePlaylist">
+        select * from user_createplaylist where Playlist_id = #{id}
+    </select>
+    <!--  得到歌单中的所有歌曲  -->
+    <select id="getSongForPlaylistID" resultType="com.music.demo.pojo.user.AddSongBean">
+        select * from music where playlist_id =#{id}
+    </select>
+    <!--  用户创建新的歌单  -->
+    <insert id="CreateUserPlaylist">
+        insert into user_createplaylist values(null,#{Playlist_name},#{Playlist_desc},#{Playlist_tags},#{Playlist_icon},#{User_id})
+    </insert>
+    <!--  删除用户的歌单  -->
+    <delete id="DeleteUserPlaylist">
+        delete from user_createplaylist where Playlist_id = #{Playlist_id}
+    </delete>
+
+
+    <insert id="CollectPlaylist">
+        insert into user_enshrine_playlist values(null,#{PlaylistID},#{PlaylistName},#{UserID})
+    </insert>
+    <insert id="CollectSong">
+        insert into user_enshrine_song values(null,#{SongID},#{SongName},#{UserID})
+    </insert>
+    <insert id="CollectSinger">
+        insert into user_enshrine_singer values(null,#{SingerID},#{SingerName},#{UserID})
+    </insert>
+    <insert id="CollectMV">
+        insert into user_enshrine_mv values(null,#{MvID},#{MvName},#{UserID})
+    </insert>
+
+    <select id="SelectUserCollectPlaylist" resultType="com.music.demo.pojo.user.CollectPlaylist">
+        select * from user_enshrine_playlist where u_id = #{id}
+    </select>
+    <select id="SelectUserCollectSong" resultType="com.music.demo.pojo.user.CollectSong">
+        select * from user_enshrine_song where u_id = #{id}
+    </select>
+    <select id="SelectUserCollectSinger" resultType="com.music.demo.pojo.user.CollectSinger">
+        select * from user_enshrine_singer where u_id = #{id}
+    </select>
+    <select id="SelectUserCollectMv" resultType="com.music.demo.pojo.user.CollectMv">
+        select * from user_enshrine_mv where u_id = #{id}
+    </select>
+
+    <delete id="UnCollectPlaylist">
+        delete from user_enshrine_playlist where playlist_id = #{PlaylistID} and u_id = #{UserID}
+    </delete>
+    <delete id="UnCollectSong">
+        delete from user_enshrine_song where music_id = #{SongID} and u_id = #{UserID}
+    </delete>
+    <delete id="UnCollectSinger">
+        delete from user_enshrine_singer where singer_id = #{SingerID} and u_id = #{UserID}
+    </delete>
+    <delete id="UnCollectMv">
+        delete from user_enshrine_mv where mv_id = #{MvID} and u_id = #{UserID}
+    </delete>
+
+    <select id="HasCollectPlaylist" resultType="com.music.demo.pojo.user.CollectPlaylist" parameterType="java.lang.Long">
+        select * from user_enshrine_playlist where u_id = #{UserID} and playlist_id = #{PlaylistID}
+    </select>
+    <select id="HasCollectSong" resultType="com.music.demo.pojo.user.CollectSong">
+        select * from user_enshrine_song where u_id = #{UserID} and music_id = #{SongID}
+    </select>
+    <select id="HasCollectSinger" resultType="com.music.demo.pojo.user.CollectSinger">
+        select * from user_enshrine_singer where u_id = #{UserID} and singer_id = #{SingerID}
+    </select>
+    <select id="HasCollectMv" resultType="com.music.demo.pojo.user.CollectMv">
+        select * from user_enshrine_mv where u_id = #{UserID} and mv_id = #{MvID}
+    </select>
+
+
+
+
+
+
+    <select id="SelectMVComment" resultType="com.music.demo.pojo.comment.mvcomment">
+        select * from commentmv where mv_id = #{mvid}
+    </select>
+    <select id="SelectSongComment" resultType="com.music.demo.pojo.comment.SongComment">
+        select * from commentsong where song_id = #{songid}
+    </select>
+    <select id="SelectPlaylistComment" resultType="com.music.demo.pojo.comment.PlaylistComment">
+        select * from commentplaylist where playlist_id = #{playlistid}
+    </select>
+
+    <insert id="reply_mv">
+        insert into reply_comment values(null,null,null,#{content},#{replyUserid},#{reply_mvid},null,null)
+    </insert>
+    <insert id="reply_song">
+        insert into reply_comment values(null,null,null,#{content},#{replyUserid},null,#{reply_songid},null)
+    </insert>
+    <insert id="reply_playlist">
+        insert into reply_comment values(null,null,null,#{content},#{replyUserid},null,null,#{reply_playlistid})
+    </insert>
+
+    <select id="SelectUserComment" resultType="com.music.demo.pojo.comment.UserComment">
+        select * from user_news where uid = #{userid}
+    </select>
+    <select id="SelectUserDTFirstComment" resultType="com.music.demo.pojo.comment.ReplayComment">
+        select * from reply_comment where news_id = #{DTid}
+    </select>
+    <select id="SelectUserDTSecondComment" resultType="com.music.demo.pojo.comment.ReplayComment">
+        select * from reply_comment where id = #{DTid}
+    </select>
+
+    <insert id="ReplyFirstDT">
+        insert into reply_comment values(#{DTid},null,#{content},#{replyUser_id},null,null,null)
+    </insert>
+
+    <select id="MvReply" resultType="com.music.demo.pojo.comment.ReplayComment">
+        select * from reply_comment where reply_mvid = #{DTid}
+    </select>
+
+    <select id="SongReply" resultType="com.music.demo.pojo.comment.ReplayComment">
+        select * from reply_comment where reply_songid = #{DTid}
+    </select>
+
+    <select id="PlaylistReply" resultType="com.music.demo.pojo.comment.ReplayComment">
+        select * from reply_comment where reply_playlistid = #{DTid}
+    </select>
+
+    <insert id="CommentThisMv">
+        insert into commentmv values(null,#{content},#{time},#{uid},#{mvid})
+    </insert>
+
+    <insert id="CommentThisSong">
+        insert into commentsong values(null,#{content},#{time},#{uid},#{songid})
+    </insert>
+
+    <insert id="CommentThisPlaylist">
+        insert into commentplaylist values(null,#{content},#{time},#{uid},#{playlistid})
+    </insert>
+
+    <insert id="Replay_mv">
+        insert into reply_comment values(null,null,#{content},#{replayUserid},#{replay_mvid},null,null)
+    </insert>
+    <insert id="Replay_song">
+        insert into reply_comment values(null,null,#{content},#{replayUserid},null,#{replay_songid},null)
+    </insert>
+    <insert id="Replay_playlist">
+        insert into reply_comment values(null,null,#{content},#{replayUserid},null,null,#{replay_playlistid})
+    </insert>
+</mapper>

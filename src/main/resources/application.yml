@@ -1,0 +1,33 @@
+# 数据库连接资源
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/project2?useSSL=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useAffectedRows=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#  #redis配置
+#  redis:
+#    database: 0
+#    host: localhost
+#    port: 6379
+#    password: 123456
+#  session:
+#    redis:
+#      #设置存储格式
+#      namespace: session:demo
+#      #设置session刷新ON_SAVE（表示在response commit前刷新缓存），IMMEDIATE（表示只要有更新，就刷新缓存）
+#      flush-mode: on_save
+#    # 选择使用redis 作为session存储
+#    store-type: redis
+
+# mybatis配置
+mybatis:
+  type-aliases-package: com.music.demo.pojo
+  mapper-locations: classpath:mybatis/*.xml
+
+# 端口配置
+# spring session配置
+server:
+  port: 8081
+
+
